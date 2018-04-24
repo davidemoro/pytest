@@ -685,14 +685,18 @@ def test_capture_binary_output(testdir):
     result.assert_outcomes(passed=2)
 
 
-def test_capture_skipped(testdir):
+@pytest.mark.parametrize("cli_options", [
+    '-k "not test_skipped"',
+    '-k dummy',
+])
+def test_capture_skipped(testdir, cli_options):
     testdir.makepyfile(r"""
         import pytest
 
         def test_skipped():
             assert True
         """)
-    result = testdir.runpytest('-k "not test_skipped"')
+    result = testdir.runpytest(cli_options)
     result.assert_outcomes(skipped=1, passed=0)
 
 
