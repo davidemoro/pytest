@@ -685,6 +685,17 @@ def test_capture_binary_output(testdir):
     result.assert_outcomes(passed=2)
 
 
+def test_capture_skipped(testdir):
+    testdir.makepyfile(r"""
+        import pytest
+
+        def test_skipped():
+            assert True
+        """)
+    result = testdir.runpytest('-k "not test_skipped"')
+    result.assert_outcomes(skipped=1, passed=0)
+
+
 def test_error_during_readouterr(testdir):
     """Make sure we suspend capturing if errors occur during readouterr"""
     testdir.makepyfile(pytest_xyz="""
