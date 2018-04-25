@@ -686,8 +686,8 @@ def test_capture_binary_output(testdir):
 
 
 @pytest.mark.parametrize("cli_options", [
-    '-k "not test_skipped"',
-    '-k dummy',
+    ('-k', 'not test_skipped',),
+    ('-k', 'dummy',),
 ])
 def test_capture_skipped(testdir, cli_options):
     testdir.makepyfile(r"""
@@ -696,8 +696,10 @@ def test_capture_skipped(testdir, cli_options):
         def test_skipped():
             assert True
         """)
-    result = testdir.runpytest(cli_options)
-    result.assert_outcomes(skipped=1, passed=0)
+    result = testdir.runpytest(*cli_options)
+    result.assert_outcomes(passed=0, failed=0, error=0)
+    # Deselected, not skipped. See #3427
+    # result.assert_outcomes(skipped=1)
 
 
 def test_error_during_readouterr(testdir):
